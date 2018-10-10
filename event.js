@@ -42,7 +42,7 @@ const getSimpleEventList = (fromDate, toDate) => {
     return eventList.map((event) => getSimpleSlots(event, fromDate, toDate)).reduce(flattenArrays, [])
 }
 
-const flattenArrays = (acc, curr) => {
+const flattenArrays = (acc = [], curr) => {
     let res = acc
     if (curr.length) {
         res = acc.concat(curr)
@@ -57,7 +57,7 @@ const dateWeeksAdded = (date, numberOfWeeks) => {
 }
 
 //Filter to get only slots included in this period
-const getIncludedSlots = (eventList, period) => {
+const getIncludedSlots = (eventList = [], period = {}) => {
     return eventList.filter((event) => {
         if (period.contains(event.startDate) || period.contains(event.endDate)) {
             return true
@@ -66,28 +66,22 @@ const getIncludedSlots = (eventList, period) => {
     })
 }
 
-const generateAnswer = (rangedSlots) => {
-    const orderedAvailableSlot = rangedSlots.filter(slot => slot.opening).sort(o => o.moment(slot.startDate).unix())
-    const orderedUnAvailableSlot = rangedSlots.filter(slot => !slot.opening).sort(o => o.moment(slot.startDate).unix())
-    const orderedAvailableNormalizedSlot = orderedAvailableSlot.map(slot => {
-        return Array.from(moment.range(slot.startDate, slot.endDate).byRange(moment.range(moment(), moment().add(30, 'minute')), { excludeEnd: true })).map(x => {
-            return moment.range(x, moment(x).add(30, 'minute'))
-        }
-        )
+const sliceRange = (slot = {}) => {
+    return Array.from(moment.range(slot.startDate, slot.endDate).byRange(moment.range(moment(), moment().add(30, 'minute')), { excludeEnd: true })).map(x => {
+        return moment.range(x, moment(x).add(30, 'minute'))
     }
-    ).reduce(flattenArrays, [])
-    const orderedUnAvailableNormalizedSlot = orderedUnAvailableSlot.map(slot => {
-        return Array.from(moment.range(slot.startDate, slot.endDate).byRange(moment.range(moment(), moment().add(30, 'minute')), { excludeEnd: true })).map(x => {
-            return moment.range(x, moment(x).add(30, 'minute'))
-        }
-        )
-    }
-    ).reduce(flattenArrays, [])
-    const slotsMatch = orderedAvailableNormalizedSlot.filter(av => {
+    )
+}
+
+const computeIntersects = (rangedSlots = []) => {
+    const availableSlot = rangedSlots.filter(slot => slot.opening)
+    const unAvailableSlot = rangedSlots.filter(slot => !slot.opening)
+    const availableSlicedSlot = availableSlot.map(sliceRange).reduce(flattenArrays, [])
+    const unAvailableSlicedSlot = unAvailableSlot.map(sliceRange).reduce(flattenArrays, [])
+    const slotsMatch = availableSlicedSlot.filter(av => {
         let shouldStay = true
-        orderedUnAvailableNormalizedSlot.forEach(unav => {
+        unAvailableSlicedSlot.forEach(unav => {
             if (unav.intersect(av)) {
-                debugger
                 shouldStay = false
             }
         })
@@ -96,11 +90,17 @@ const generateAnswer = (rangedSlots) => {
     return slotsMatch
 }
 
+const computeAnswer = (ranges = []) => {
+    return ranges.sort(r => r.start).reduce((acc, curr) => {
+        return `${acc}, the ${curr.start.format('Do dddd MMM, HH:mm')}`
+    }, 'My friend, I promise I can be HERE')
+}
+
 Event.prototype.getAvailabilities = (fromDate, toDate) => {
     const simpleEventList = getSimpleEventList(fromDate, toDate)
-    const period = moment.range(fromDate, toDate)
-    const rangedSlots = getIncludedSlots(simpleEventList, period)
-    return generateAnswer(rangedSlots)
+    const rangedSlots = getIncludedSlots(simpleEventList, moment.range(fromDate, toDate))
+    const intersects = computeIntersects(rangedSlots)
+    return computeAnswer(intersects)
 }
 
 module.exports = Event
