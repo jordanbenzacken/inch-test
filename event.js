@@ -91,7 +91,7 @@ const computeIntersects = (rangedSlots = []) => {
 }
 
 const computeAnswer = (ranges = []) => {
-    return ranges.sort(r => r.start).reduce((acc, curr) => {
+    return ranges.sort(r => -r.start).reduce((acc, curr) => {
         return `${acc}, the ${curr.start.format('Do dddd MMM, HH:mm')}`
     }, 'My friend, I promise I can be HERE')
 }
