@@ -66,9 +66,10 @@ const getIncludedSlots = (eventList = [], period = {}) => {
     })
 }
 
-const sliceRange = (slot = {}) => {
-    return Array.from(moment.range(slot.startDate, slot.endDate).byRange(moment.range(moment(), moment().add(30, 'minute')), { excludeEnd: true })).map(x => {
-        return moment.range(x, moment(x).add(30, 'minute'))
+//this slice unit can be easily change (30 minutes, 15min, 2 hours slots ...)
+const sliceRange = (slot = {}, duration = 30, unit = 'minute') => {
+    return Array.from(moment.range(slot.startDate, slot.endDate).byRange(moment.range(moment(), moment().add(duration, unit)), { excludeEnd: true })).map(x => {
+        return moment.range(x, moment(x).add(duration, unit))
     }
     )
 }
@@ -76,8 +77,8 @@ const sliceRange = (slot = {}) => {
 const computeIntersects = (rangedSlots = []) => {
     const availableSlot = rangedSlots.filter(slot => slot.opening)
     const unAvailableSlot = rangedSlots.filter(slot => !slot.opening)
-    const availableSlicedSlot = availableSlot.map(sliceRange).reduce(flattenArrays, [])
-    const unAvailableSlicedSlot = unAvailableSlot.map(sliceRange).reduce(flattenArrays, [])
+    const availableSlicedSlot = availableSlot.map((slot) => sliceRange(slot)).reduce(flattenArrays, [])
+    const unAvailableSlicedSlot = unAvailableSlot.map((slot) => sliceRange(slot)).reduce(flattenArrays, [])
     const slotsMatch = availableSlicedSlot.filter(av => {
         let shouldStay = true
         unAvailableSlicedSlot.forEach(unav => {
