@@ -1,0 +1,24 @@
+{
+  "name": "inch-test",
+  "version": "1.0.0",
+  "description": "Context We are building a method that will allow the providers connected to Inch to handle their interventions in their calendar. We already have classes for the intervention and we need to build a method that will allow us to calculate all the available windows.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jordanbenzacken/inch-test.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jordanbenzacken/inch-test/issues"
+  },
+  "homepage": "https://github.com/jordanbenzacken/inch-test#readme",
+  "dependencies": {
+    "moment": "^2.22.2",
+    "moment-range": "^4.0.1"
+  }
+}
