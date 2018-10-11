@@ -1,8 +1,8 @@
 # inch-test
 
-install node.js (at least v8)
-npm i
-npm start
+- install node.js (at least v8)
+- npm i
+- npm start
 
 # inch-test
 
