@@ -1,5 +1,11 @@
 # inch-test
 
+install node.js (at least v8)
+npm i
+npm start
+
+# inch-test
+
 Context
 We are building a method that will allow the providers connected to Inch to handle their interventions in their calendar. We already have classes for the intervention and we need to build a method that will allow us to calculate all the available windows.
 
