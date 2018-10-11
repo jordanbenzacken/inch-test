@@ -1,6 +1,7 @@
 # inch-test
 
 - install node.js (at least v8)
+- git clone ....
 - npm i
 - npm start
 
